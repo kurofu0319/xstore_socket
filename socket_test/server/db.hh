@@ -92,7 +92,7 @@ load_map(const usize& nkeys) -> usize
       break;
     }
   }
-  R2_LOG(4) << "Total Map data sz: " << db.sz_inner() << "B"
+  LOG(4) << "Total Map data sz: " << db.sz_inner() << "B"
          << " w entries: " << count;
   return count;
 }
@@ -132,11 +132,11 @@ load_tpcc(const usize& nkeys, ::r2::util::FastRandom& rand)
 
 end:
   cdf.dump_as_np_data("tpcc_cdf.py");
-  R2_LOG(4) << "Total TPCC data sz: " << db.sz_inner() << "B"
+  LOG(4) << "Total TPCC data sz: " << db.sz_inner() << "B"
          << " w entries: " << count;
   auto all = db.sz_all();
   for (auto s : all) {
-    R2_LOG(4) << "sz: " << s;
+    LOG(4) << "sz: " << s;
   }
   return count;
 }
@@ -220,7 +220,7 @@ page_updater(const u64& label,
     err_data.insert(err);
   }
   if (err < cur_min || err > cur_max) {
-    R2_LOG(0) << "label: " << label << " ; predict: " << predict
+    LOG(0) << "label: " << label << " ; predict: " << predict
            << "; err: " << static_cast<i64>(label - predict);
   }
 
@@ -298,7 +298,7 @@ train_db(const std::string& config)
           // cache->default_train_first<DBTreeIter>(db);
           // cache->first_layer.train<DBTreeIter, SS>(db,ss);
           auto num = cache->train_first<DBTreeIter, StepSampler>(db, ss);
-          R2_LOG(4) << "train first layer done using: " << t.passed_sec()
+          LOG(4) << "train first layer done using: " << t.passed_sec()
                  << " secs; for: " << num << " keys";
         }
       } else {
@@ -386,24 +386,24 @@ train_db(const std::string& config)
         page_cdf.finalize();
         nkeys_cdf.finalize();
 
-        R2_LOG(4) << "model: " << idx << " has max key: " << max
+        LOG(4) << "model: " << idx << " has max key: " << max
                << "; ratio: " << (double)max / FLAGS_nkeys;
 
-        R2_LOG(4) << "nkeys data: "
+        LOG(4) << "nkeys data: "
                << "[average: " << nkeys_cdf.others.average
                << ", min: " << nkeys_cdf.others.min
                << ", max: " << nkeys_cdf.others.max;
-        R2_LOG(4) << nkeys_cdf.dump_as_np_data() << "\n";
+        LOG(4) << nkeys_cdf.dump_as_np_data() << "\n";
 
-        R2_LOG(4) << "Error data: "
+        LOG(4) << "Error data: "
                << "[average: " << error_cdf.others.average
                << ", min: " << error_cdf.others.min
                << ", max: " << error_cdf.others.max;
-        R2_LOG(4) << error_cdf.dump_as_np_data() << "\n";
+        LOG(4) << error_cdf.dump_as_np_data() << "\n";
 
-        R2_LOG(4) << "Page entries:" << page_cdf.dump_as_np_data() << "\n";
+        LOG(4) << "Page entries:" << page_cdf.dump_as_np_data() << "\n";
 
-        R2_LOG(4) << "total " << num_sub << " models; null models:" << null_model;
+        LOG(4) << "total " << num_sub << " models; null models:" << null_model;
         num_error.finalize().dump_as_np_data("ne.py");
 
         if (FLAGS_verbose) {
@@ -455,12 +455,12 @@ train_db(const std::string& config)
         error_cdf.finalize();
         page_cdf.finalize();
 
-        R2_LOG(4) << "Error data:";
-        R2_LOG(4) << error_cdf.dump_as_np_data() << "\n";
+        LOG(4) << "Error data:";
+        LOG(4) << error_cdf.dump_as_np_data() << "\n";
 
-        R2_LOG(4) << "Page entries:" << page_cdf.dump_as_np_data() << "\n";
+        LOG(4) << "Page entries:" << page_cdf.dump_as_np_data() << "\n";
 
-        R2_LOG(4) << "total " << num_sub << " models; null models:" << null_model;
+        LOG(4) << "total " << num_sub << " models; null models:" << null_model;
       }
     }
     // done
@@ -490,7 +490,7 @@ serialize_db()
   tt_buf = round_up<u64>(tt_buf, sizeof(u64));
   cur_ptr = (char*)tt_buf;
 
-  R2_LOG(4) << "after seriaize, tt buf: " << tt_buf
+  LOG(4) << "after seriaize, tt buf: " << tt_buf
          << "; model sz:  " << tt_buf - model_buf;
 
   // update the TT
